@@ -98,12 +98,13 @@ OnCalendar=Mon,Wed,Fri 03:00:00     # Mon, Wed, Fri at 3 AM
 
 The `Persistent=true` option ensures that if the system was off during the scheduled time, the update will run once the system boots up.
 
-# Check current timezone
+## Check current timezone
 timedatectl
 
-# If not UTC+3, set it (example: East Africa Time)
+## If not UTC+3, set it (example: East Africa Time)
 sudo timedatectl set-timezone Africa/Nairobi
 
+# User-level Timers
 Ah, I see! You're using **user-level systemd** timers in `~/.config/systemd/user/`. 
 
 However, there's an important issue: **user timers can't run `sudo` commands** because they run with your user privileges, not root privileges.
