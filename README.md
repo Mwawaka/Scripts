@@ -27,7 +27,6 @@ Create the service file (this needs to be a **system** service, not user, since 
 
 ```bash
 sudo nano /etc/systemd/system/system-update.service
-sudo nano ~/.config/systemd/user/update.service
 ```
 
 Content:
@@ -104,3 +103,92 @@ timedatectl
 
 # If not UTC+3, set it (example: East Africa Time)
 sudo timedatectl set-timezone Africa/Nairobi
+
+Ah, I see! You're using **user-level systemd** timers in `~/.config/systemd/user/`. 
+
+However, there's an important issue: **user timers can't run `sudo` commands** because they run with your user privileges, not root privileges.
+
+## The Problem
+
+Your update script needs root access (`apt update`, `apt upgrade`, etc.), but user timers run as your regular user account.
+
+## Solutions
+
+### Option 1: Use System-Level Timers (Recommended)
+
+Move your files to system locations as I described above:
+- `/etc/systemd/system/system-update.service`
+- `/etc/systemd/system/system-update.timer`
+- `/usr/local/bin/system-update.sh`
+
+This runs with root privileges automatically.
+
+### Option 2: Configure Passwordless Sudo (If You Must Use User Timers)
+
+If you really want to keep them in `~/.config/systemd/user/`, you need to:
+
+1. **Create the script:**
+```bash
+mkdir -p ~/scripts
+nano ~/scripts/system-update.sh
+```
+
+Content:
+```bash
+#!/bin/bash
+sudo apt update && sudo apt upgrade -y && sudo apt autoclean && sudo apt autoremove -y
+```
+
+Make executable:
+```bash
+chmod +x ~/scripts/system-update.sh
+```
+
+2. **Configure passwordless sudo for apt commands:**
+```bash
+sudo visudo
+```
+
+Add this line at the end:
+```
+your_username ALL=(ALL) NOPASSWD: /usr/bin/apt
+```
+
+Replace `your_username` with your actual username.
+
+3. **Your existing user service/timer files stay as they are:**
+
+`~/.config/systemd/user/system-update.service`:
+```ini
+[Unit]
+Description=System Update Script
+
+[Service]
+Type=oneshot
+ExecStart=/home/your_username/scripts/system-update.sh
+```
+
+`~/.config/systemd/user/system-update.timer`:
+```ini
+[Unit]
+Description=Run System Updates at 5 AM and 8 PM
+
+[Timer]
+OnCalendar=*-*-* 05,20:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+```
+
+4. **Enable:**
+```bash
+systemctl --user daemon-reload
+systemctl --user enable --now system-update.timer
+```
+
+## Which Should You Choose?
+
+**System-level timers** (Option 1) are the standard approach for system maintenance tasks. User timers are typically for user-specific tasks like backups, syncing, etc.
+
+Which approach would you prefer?
