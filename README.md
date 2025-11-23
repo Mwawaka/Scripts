@@ -1,3 +1,6 @@
+# System-level timers
+They runs with root privileges automatically.
+
 ## Step 1: Create the Update Script
 
 First, create the script file:
@@ -113,16 +116,6 @@ However, there's an important issue: **user timers can't run `sudo` commands** b
 
 Your update script needs root access (`apt update`, `apt upgrade`, etc.), but user timers run as your regular user account.
 
-## Solutions
-
-### Option 1: Use System-Level Timers (Recommended)
-
-Move your files to system locations as I described above:
-- `/etc/systemd/system/system-update.service`
-- `/etc/systemd/system/system-update.timer`
-- `/usr/local/bin/system-update.sh`
-
-This runs with root privileges automatically.
 
 ### Option 2: Configure Passwordless Sudo (If You Must Use User Timers)
 
