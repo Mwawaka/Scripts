@@ -27,6 +27,7 @@ Create the service file (this needs to be a **system** service, not user, since 
 
 ```bash
 sudo nano /etc/systemd/system/system-update.service
+sudo nano ~/.config/systemd/user/update.service
 ```
 
 Content:
@@ -97,3 +98,9 @@ OnCalendar=Mon,Wed,Fri 03:00:00     # Mon, Wed, Fri at 3 AM
 ```
 
 The `Persistent=true` option ensures that if the system was off during the scheduled time, the update will run once the system boots up.
+
+# Check current timezone
+timedatectl
+
+# If not UTC+3, set it (example: East Africa Time)
+sudo timedatectl set-timezone Africa/Nairobi
