@@ -114,7 +114,7 @@ However, there's an important issue: **user timers can't run `sudo` commands** b
 
 ## Configure Passwordless Sudo (If You Must Use User Timers)
 
-If you really want to keep them in `~/.config/systemd/user/`, you need to:
+If you want to use user level timers in `~/.config/systemd/user/`, you need to:
 
 1. **Create the script:**
 ```bash
@@ -179,5 +179,3 @@ systemctl --user enable --now system-update.timer
 ## Which Should You Choose?
 
 **System-level timers** (Option 1) are the standard approach for system maintenance tasks. User timers are typically for user-specific tasks like backups, syncing, etc.
-
-Which approach would you prefer?
