@@ -108,16 +108,11 @@ timedatectl
 sudo timedatectl set-timezone Africa/Nairobi
 
 # User-level Timers
-Ah, I see! You're using **user-level systemd** timers in `~/.config/systemd/user/`. 
+**user-level systemd** timers in `~/.config/systemd/user/`. 
 
 However, there's an important issue: **user timers can't run `sudo` commands** because they run with your user privileges, not root privileges.
 
-## The Problem
-
-Your update script needs root access (`apt update`, `apt upgrade`, etc.), but user timers run as your regular user account.
-
-
-### Option 2: Configure Passwordless Sudo (If You Must Use User Timers)
+## Configure Passwordless Sudo (If You Must Use User Timers)
 
 If you really want to keep them in `~/.config/systemd/user/`, you need to:
 
